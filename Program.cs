@@ -55,6 +55,18 @@ namespace ZhipuAIConsoleApp
                 Console.WriteLine(content);
             }
 
+
+            var _res=Zhipu.WithDataSchemaAsync(sampleInput, typeof(SampleList), temprature: (float)0.3);
+            mainLogger.LogInformation($"Current task id :{_res.id},{_res.task_status}");
+            var query = new ZhipuQueryContent(_res.id);
+
+            var asyncResult=Zhipu.ResultQuery(query);
+            contents = asyncResult.GetContent();
+            foreach (var content in contents)
+            {
+                Console.WriteLine(content);
+            }
+
         }
     }
 }
