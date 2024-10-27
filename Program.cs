@@ -8,6 +8,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Basement.Models.ZhipuAI;
 using Basement.DataSchema;
+using Basement.Parser;
+using Basement.TextChunker;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace ZhipuAIConsoleApp
 {
@@ -16,13 +20,11 @@ namespace ZhipuAIConsoleApp
 
         public static void Main(string[] args)
         {
-
             var builder = new ConfigurationBuilder();
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             IConfigurationRoot configuration = builder.Build();
 
             var apiKey = configuration["APIKEY"];
-            Console.WriteLine(apiKey);
 
 
             var services = new ServiceCollection();
@@ -34,6 +36,22 @@ namespace ZhipuAIConsoleApp
             var httpClientFactory = servicesProvider.GetRequiredService<IHttpClientFactory>();
             var logger = servicesProvider.GetRequiredService<ILogger<ZhipuAI>>();
             var mainLogger = servicesProvider.GetRequiredService<ILogger<Program>>();
+
+            string samplePath = "C:\\Users\\Jonah\\Desktop\\Sample.txt";
+
+            try
+            {
+                using (StreamReader reader = new StreamReader(samplePath))
+                {
+                    string text = reader.ReadToEnd();
+                    Console.WriteLine(text);
+                }
+            }
+            catch (Exception e)
+            {
+                mainLogger.LogWarning($"No file readed becauseof {e.Message}");
+            }
+
 
             var modelName = "glm-4";
 
@@ -66,6 +84,11 @@ namespace ZhipuAIConsoleApp
             {
                 Console.WriteLine(content);
             }
+
+            JsonParser jsonParser = new JsonParser();
+            var result=jsonParser.ParseTo<SampleList>(contents[0]);
+            result.PrintToConsole();
+
 
         }
     }

@@ -15,6 +15,7 @@ using System.Transactions;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace Basement.Models.ZhipuAI
 {
@@ -386,6 +387,18 @@ namespace Basement.Models.ZhipuAI
             {
                 schemaPrompt.content += "Type:" + property.PropertyType.Name + "\t";
                 schemaPrompt.content += "JsonName:" + property.Name + "\n";
+                if (Attribute.IsDefined(property, typeof(DescriptionAttribute)))
+                {
+                    try
+                    {
+
+                        schemaPrompt.content += "Description" + property.GetCustomAttribute<DescriptionAttribute>().Description;
+                    }
+                    catch (Exception e)
+                    {
+                        zhipu.Logger.LogError($"Cannot get valid description of given property {property.Name}, with exception message: {e.Message}");
+                    }
+                }
             }
 
             schemaPrompt.content += "Schema ends";

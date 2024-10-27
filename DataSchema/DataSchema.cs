@@ -9,12 +9,14 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Basement.DataSchema
 {
 
     public abstract class DataSchema
     {
+        public abstract void PrintToConsole();
     }
 
     public class SampleSchema : DataSchema
@@ -28,6 +30,12 @@ namespace Basement.DataSchema
         public string Name { get; set; } = "Charname";
 
         public SampleSchema() { }
+
+        public override void PrintToConsole()
+        {
+            Console.WriteLine("ID : " + ID);
+            Console.WriteLine("Name : " + Name);
+        }
     }
 
     public class SampleList : DataSchema
@@ -35,6 +43,14 @@ namespace Basement.DataSchema
         [Required]
         [Description("A list of people.")]
         public List<SampleSchema> entities { get; set; } = new List<SampleSchema>() { new SampleSchema() };
+
+        public override void PrintToConsole()
+        {
+            foreach (var entity in entities)
+            {
+                entity.PrintToConsole();
+            }
+        }
     }
 
 
